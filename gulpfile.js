@@ -1,6 +1,7 @@
 require('./gulp/tasks/styles');
 require('./gulp/tasks/watch');
-require('./gulp/tasks/sprites')
+require('./gulp/tasks/sprites');
+require('./gulp/tasks/scripts');
 
 // gulp.task('default', (done) => {
 // console.log('Hooray - you created a Gulp task');

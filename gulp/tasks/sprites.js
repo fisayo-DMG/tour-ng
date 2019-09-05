@@ -20,6 +20,10 @@ gulp.task('beginClean', () => {
     return del(['./app/temp/sprite', './app/assets/images/sprites']);
 });
 
+// gulp.task('randomStuff', () => {
+//     console.log('random stuff');
+// });
+
 //beginClean would normally be a dependency to this task
 // but there is no need to add it here since we are already
 // adding it to the list of icons tasks at the bottom that woul run in series
