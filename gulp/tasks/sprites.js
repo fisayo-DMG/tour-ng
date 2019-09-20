@@ -1,11 +1,24 @@
 var gulp = require('gulp'),
 svgSprite = require('gulp-svg-sprite'),
 rename = require('gulp-rename'), 
-del = require('del');
+del = require('del'),
+svg2png = require('gulp-svg2png');
 
 var config = {
+    shape: {
+        spacing: {
+            padding: 1
+        }
+    },
     mode: {
         css: {
+            variables: {
+                replaceSvgWithPng: function() {
+                    return function(sprite, render) {
+                        return render(sprite).split('.svg').join('.png');
+                    }
+                }
+            },
             sprite: 'sprite.svg',
             render: {
                 css: {
@@ -33,13 +46,18 @@ gulp.task('createSprite', () => {
         .pipe(gulp.dest('./app/temp/sprite/'));
 });
 
+gulp.task('createPngCopy', gulp.series('createSprite', () => {
+    return gulp.src('./app/temp/sprite/css/*.svg')
+        .pipe(svg2png())
+        .pipe(gulp.dest('./app/temp/sprite/css'));
+}));
 //This task depends on createSprite task but it won't be included here
 //instead it would be added appropiately in series in the icons tasks that runs
 //the other tasks.
-gulp.task('copySpriteGraphic', () => {
-    return gulp.src('./app/temp/sprite/css/**/*.svg')
+gulp.task('copySpriteGraphic', gulp.series('createPngCopy', () => {
+    return gulp.src('./app/temp/sprite/css/**/*.{svg,png}')
         .pipe(gulp.dest('./app/assets/images/sprites'));
-});
+}));
 
 // gulp.task('copySpriteCSS', gulp.series('createSprite', () => {
 //     return gulp.src('./app/temp/sprite/css/*.css')
@@ -56,4 +74,4 @@ gulp.task('copySpriteCSS', () => {
 gulp.task('endClean', () => {
     return del('./app/temp/sprite');
 });
-gulp.task('icons', gulp.series('beginClean', 'createSprite', 'copySpriteGraphic', 'copySpriteCSS', 'endClean'));
+gulp.task('icons', gulp.series('beginClean', 'createSprite', 'createPngCopy', 'copySpriteGraphic', 'copySpriteCSS', 'endClean'));
